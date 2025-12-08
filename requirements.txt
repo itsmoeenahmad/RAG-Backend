@@ -1,0 +1,15 @@
+fastapi
+uvicorn[standard]
+python-dotenv
+pymongo
+pydantic
+qdrant-client
+langchain
+langchain-google-genai
+langchain-qdrant
+langchain-community
+langchain-core
+pypdf      
+python-multipart
+aiofiles
+typing_extensions

@@ -1,0 +1,23 @@
+[project]
+name = "rag-backend"
+version = "0.1.0"
+description = "rag system backend code."
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "aiofiles>=25.1.0",
+    "fastapi>=0.124.0",
+    "langchain>=1.1.2",
+    "langchain-community>=0.4.1",
+    "langchain-core>=1.1.1",
+    "langchain-google-genai>=3.2.0",
+    "langchain-qdrant>=1.1.0",
+    "pydantic>=2.12.5",
+    "pymongo>=4.15.5",
+    "pypdf>=6.4.1",
+    "python-dotenv>=1.2.1",
+    "python-multipart>=0.0.20",
+    "qdrant-client>=1.16.1",
+    "typing-extensions>=4.15.0",
+    "uvicorn[standard]>=0.38.0",
+]
