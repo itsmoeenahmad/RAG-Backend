@@ -403,7 +403,7 @@ console.log(result.answer);
 
 ---
 
-## 🐳 Docker Deployment
+## Docker Deployment
 
 ### Build and Run
 
