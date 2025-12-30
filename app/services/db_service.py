@@ -1,7 +1,7 @@
-from .logger import logger
 from datetime import datetime
+from ..core.logger import logger
 from pymongo import MongoClient, ASCENDING
-from .config import MONGODB_URL, MONGO_DB_NAME, MONGO_CHAT_COLLECTION
+from ..core.config import MONGODB_URL, MONGO_DB_NAME, MONGO_CHAT_COLLECTION
 
 client = MongoClient(MONGODB_URL)
 db = client[MONGO_DB_NAME]

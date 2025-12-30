@@ -106,24 +106,27 @@ Each user's documents are stored in their own isolated collection, ensuring **co
 ```
 rag-backend/
 ├── app/
-│   ├── __init__.py
-│   ├── main.py           # FastAPI app & endpoints
-│   ├── config.py         # Environment configuration
-│   ├── models.py         # Pydantic request/response models
-│   ├── vector_store.py   # Qdrant vector operations (per-user)
-│   ├── chat_service.py   # LLM chat with RAG
-│   ├── db_service.py     # MongoDB chat history
-│   ├── pdf_loader.py     # PDF text extraction
-│   └── logger.py         # Logging configuration
-├── scripts/
-│   ├── init_qdrant_collection.py  # Initialize Qdrant collection (not usable now in latest version)
-│   └── test.py                     # Test scripts
-├── .env                  # Environment variables (not in git)
-├── .env.example          # Example environment file
-├── requirements.txt      # Python dependencies
-├── Dockerfile           # Docker configuration
-├── pyproject.toml       # Python project configuration
-└── README.md            # This file
+│   ├── main.py              # FastAPI app initialization
+│   ├── core/                # Core utilities
+│   │   ├── config.py        # Environment configuration
+│   │   └── logger.py        # Logging setup
+│   ├── routers/             # API route definitions
+│   │   ├── api.py           # All endpoints
+│   │   └── models.py        # Pydantic request/response models
+│   ├── services/            # Business logic and integrations
+│   │   ├── chat_service.py  # LLM chat with RAG
+│   │   ├── db_service.py    # MongoDB chat history
+│   │   └── vector_store.py  # Qdrant vector operations (per-user)
+│   └── loaders/             # Data loading utilities
+│       └── pdf_loader.py    # PDF text extraction
+├── tests/
+│   └── test.py              # Test scripts
+├── .env                     # Environment variables (not in git)
+├── .env.example             # Example environment file
+├── requirements.txt         # Python dependencies
+├── Dockerfile               # Docker configuration
+├── pyproject.toml           # Python project configuration
+└── README.md                # This file
 ```
 
 ---

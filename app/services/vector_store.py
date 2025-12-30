@@ -1,25 +1,23 @@
 from uuid import uuid4
 from typing import List
-from .logger import logger
+from ..core.logger import logger
 from qdrant_client import QdrantClient
 from langchain_core.documents import Document
 from langchain_qdrant import QdrantVectorStore
 from qdrant_client.http import models as qdrant_models
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from .config import QDRANT_URL, QDRANT_API_KEY, CHUNK_SIZE, CHUNK_OVERLAP, GEMINI_API_KEY
+from ..core.config import QDRANT_URL, QDRANT_API_KEY, CHUNK_SIZE, CHUNK_OVERLAP, GEMINI_API_KEY
 
 class VectorStore:
     def __init__(self):
         self.embeddings = GoogleGenerativeAIEmbeddings(model="gemini-embedding-001", google_api_key=GEMINI_API_KEY)
         self.qdrant_client = QdrantClient(url=QDRANT_URL, api_key=QDRANT_API_KEY) if QDRANT_API_KEY else QdrantClient(url=QDRANT_URL)
         self.text_splitter = RecursiveCharacterTextSplitter(chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP)
-        # Cache for user vector stores to avoid recreating them
         self._user_stores: dict[str, QdrantVectorStore] = {}
 
     def _get_user_collection_name(self, user_id: str) -> str:
         """Generate a collection name for a specific user."""
-        # Sanitize user_id to make it a valid collection name
         safe_user_id = "".join(c if c.isalnum() or c in "_-" else "_" for c in user_id)
         return f"user_{safe_user_id}_data"
 
@@ -27,7 +25,7 @@ class VectorStore:
         """Create user's collection if it doesn't exist. Returns collection name."""
         collection_name = self._get_user_collection_name(user_id)
         
-        # Check if collection already exists
+
         collections = self.qdrant_client.get_collections().collections
         collection_names = [c.name for c in collections]
         
@@ -36,7 +34,7 @@ class VectorStore:
             self.qdrant_client.create_collection(
                 collection_name=collection_name,
                 vectors_config=qdrant_models.VectorParams(
-                    size=3072,  # Gemini embedding dimension
+                    size=3072,  
                     distance=qdrant_models.Distance.COSINE
                 )
             )
@@ -64,7 +62,7 @@ class VectorStore:
         if not docs:
             return 0
         
-        # Get user-specific vector store
+
         user_store = self._get_user_vector_store(user_id)
         
         ids = [str(uuid4()) for _ in docs]
@@ -77,7 +75,7 @@ class VectorStore:
 
     def retrieve(self, user_id: str, query: str, top_k: int = 3):
         """Return concatenated text from top_k similar docs from user's collection."""
-        # Check if user has a collection
+
         collection_name = self._get_user_collection_name(user_id)
         collections = self.qdrant_client.get_collections().collections
         collection_names = [c.name for c in collections]
@@ -104,7 +102,7 @@ class VectorStore:
         
         if collection_name in collection_names:
             self.qdrant_client.delete_collection(collection_name)
-            # Remove from cache
+
             if user_id in self._user_stores:
                 del self._user_stores[user_id]
             logger.info("Deleted collection for user: %s", user_id)
