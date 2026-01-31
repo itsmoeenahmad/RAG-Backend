@@ -51,8 +51,8 @@ class VectorStore:
             )
         return self._user_stores[user_id]
 
-    def add_documents(self, user_id: str, documents: List[Document]):
-        """Split docs into chunks and upsert into user's Qdrant collection."""
+    def add_documents(self, user_id: str, documents: List[Document], batch_size: int = 100):
+        """Split docs into chunks and upsert into user's Qdrant collection with batching."""
         logger.info("Splitting documents into chunks for user: %s", user_id)
         docs = []
         for d in documents:
@@ -62,16 +62,27 @@ class VectorStore:
         if not docs:
             return 0
         
-
+        # Get user-specific vector store
         user_store = self._get_user_vector_store(user_id)
         
-        ids = [str(uuid4()) for _ in docs]
-        logger.info("Upserting %d chunks into Qdrant collection for user: %s", len(docs), user_id)
-        user_store.add_documents(
-            documents=docs, 
-            ids=ids
-        )
-        return len(docs)
+        # Batch processing to avoid memory issues and rate limits
+        total_chunks = len(docs)
+        logger.info("Processing %d chunks in batches of %d for user: %s", total_chunks, batch_size, user_id)
+        
+        for i in range(0, total_chunks, batch_size):
+            batch = docs[i:i + batch_size]
+            batch_ids = [str(uuid4()) for _ in batch]
+            
+            logger.info("Upserting batch %d-%d/%d into Qdrant for user: %s", 
+                       i + 1, min(i + batch_size, total_chunks), total_chunks, user_id)
+            
+            user_store.add_documents(
+                documents=batch, 
+                ids=batch_ids
+            )
+        
+        logger.info("Successfully inserted %d total chunks for user: %s", total_chunks, user_id)
+        return total_chunks
 
     def retrieve(self, user_id: str, query: str, top_k: int = 3):
         """Return concatenated text from top_k similar docs from user's collection."""
