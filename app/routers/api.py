@@ -26,7 +26,7 @@ def health():
     """
     from datetime import datetime
     return {
-        "status": "🚀 RAG Backend Online",
+        "status": "RAG Backend Online",
         "message": "Ready to ingest documents and answer questions!",
         "version": "2.0.0",
         "timestamp": datetime.utcnow().isoformat() + "Z",
